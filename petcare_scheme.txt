@@ -1,0 +1,105 @@
+
+# Petcate Schemes
+
+## Auth Service
+Table: users
+| Column         | Type         | Constraints                |
+|----------------|--------------|----------------------------|
+| id             | UUID         | PK                         |
+| email          | VARCHAR(255) | NOT NULL, UNIQUE           |
+| password_hash  | VARCHAR(255) | NOT NULL                   |
+| role           | VARCHAR(20)  | NOT NULL, CHECK (owner,doctor,admin) |
+| created_at     | TIMESTAMP    | NOT NULL, DEFAULT NOW()    |
+
+
+
+## Owner Service
+Table: owners
+| Column         | Type         | Constraints                |
+|----------------|--------------|----------------------------|
+| id             | UUID         | PK                         |
+| user_id        | UUID         | FK (users.id)              |
+| first_name     | VARCHAR(100) |                            |
+| last_name      | VARCHAR(100) |                            |
+| phone          | VARCHAR(20)  |                            |
+| address        | TEXT         |                            |
+| updated_at     | TIMESTAMP    |                            |
+
+
+
+## Doctor Service
+Table: doctors
+| Column         | Type         | Constraints                |
+|----------------|--------------|----------------------------|
+| id             | UUID         | PK                         |
+| user_id        | UUID         | FK (users.id)              |
+| first_name     | VARCHAR(100) |                            |
+| last_name      | VARCHAR(100) |                            |
+| phone          | VARCHAR(20)  |                            |
+| updated_at     | TIMESTAMP    |                            |
+
+Table: doctor_skills
+| Column         | Type         | Constraints                |
+|----------------|--------------|----------------------------|
+| doctor_id      | UUID         | PK, FK (doctors.id)        |
+| species_id     | UUID         | PK, FK (species.id)        |
+| procedure_id   | UUID         | PK, FK (procedures.id)     |
+
+
+
+## Pet Service
+Table: species
+| Column         | Type         | Constraints                |
+|----------------|--------------|----------------------------|
+| id             | UUID         | PK                         |
+| name           | VARCHAR(100) | NOT NULL, UNIQUE           |
+
+Table: pets
+| Column         | Type         | Constraints                |
+|----------------|--------------|----------------------------|
+| id             | UUID         | PK                         |
+| owner_id       | UUID         | FK (owners.id)             |
+| name           | VARCHAR(100) | NOT NULL                   |
+| species_id     | UUID         | FK (species.id)            |
+| birth_date     | DATE         |                            |
+| created_at     | TIMESTAMP    | NOT NULL, DEFAULT NOW()    |
+
+
+
+## Procedure Service
+Table: procedures
+| Column         | Type         | Constraints                |
+|----------------|--------------|----------------------------|
+| id             | UUID         | PK                         |
+| name           | VARCHAR(100) | NOT NULL                   |
+| duration       | INT          | NOT NULL                   |
+| price          | DECIMAL(10,2)| NOT NULL                   |
+| species_id     | UUID         | FK (species.id)            |
+
+
+
+## Appointment Service
+Table: appointments
+| Column         | Type         | Constraints                |
+|----------------|--------------|----------------------------|
+| id             | UUID         | PK                         |
+| pet_id         | UUID         | FK (pets.id)               |
+| doctor_id      | UUID         | FK (doctors.id)            |
+| procedure_id   | UUID         | FK (procedures.id)         |
+| start_time     | TIMESTAMP    | NOT NULL                   |
+| status         | VARCHAR(20)  | NOT NULL, CHECK (scheduled,completed) |
+| payment_id     | UUID         | FK (payments.id)           |
+| created_at     | TIMESTAMP    | NOT NULL, DEFAULT NOW()    |
+
+
+
+## Payment Service
+Table: payments
+| Column         | Type         | Constraints                |
+|----------------|--------------|----------------------------|
+| id             | UUID         | PK                         |
+| appointment_id | UUID         | FK (appointments.id)       |
+| amount         | DECIMAL(10,2)| NOT NULL                   |
+| status         | VARCHAR(20)  | NOT NULL, CHECK (pending,completed,failed) |
+| receipt_url    | TEXT         |                            |
+| created_at     | TIMESTAMP    | NOT NULL, DEFAULT NOW()    |
